@@ -1,18 +1,25 @@
-const jwt = require("jsonwebtoken");
+// D:\semester 5\pws\praktikum7\middleware\authMiddleware.js
 
-module.exports = function (req, res, next) {
-    const token = req.headers.authorization;
+const jwt = require('jsonwebtoken');
 
-    if (!token) {
-        return res.status(403).json({ message: "Token required" });
+const JWT_SECRET = process.env.JWT_SECRET || 'SUPER_SECRET_KEY_FOR_PICO';
+
+exports.verifyAdminToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res
+      .status(403)
+      .json({ message: 'Token required or format invalid (Bearer <token>)' });
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  jwt.verify(token, JWT_SECRET, (err, admin) => {
+    if (err) {
+      return res.status(401).json({ message: 'Invalid or expired token' });
     }
-
-    jwt.verify(token, "SECRETJWT", (err, admin) => {
-        if (err) {
-            return res.status(401).json({ message: "Invalid token" });
-        }
-
-        req.admin = admin;
-        next();
-    });
+    req.admin = admin;
+    next();
+  });
 };

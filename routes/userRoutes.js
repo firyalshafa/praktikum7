@@ -1,8 +1,11 @@
-const express = require("express");
-const router = express.Router();
-const auth = require("../middleware/authMiddleware");
-const controller = require("../controllers/userController");
+// D:\semester 5\pws\praktikum7\routes\userRoutes.js
 
-router.get("/", auth, controller.getAllUsers);
+const express = require('express');
+const router = express.Router();
+
+const userController = require('../controllers/userController');
+
+// POST /api/users/register
+router.post('/register', userController.registerUserAndCreateKey);
 
 module.exports = router;
